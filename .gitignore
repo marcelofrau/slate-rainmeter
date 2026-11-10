@@ -1,0 +1,15 @@
+# Desktop.ini and OS junk
+Desktop.ini
+Thumbs.db
+.DS_Store
+
+# Editor / temp files
+*.bak
+*.tmp
+*~
+.vscode/
+.idea/
+
+# Tooling
+.cortexkit/
+
