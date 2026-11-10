@@ -144,7 +144,7 @@ function Update()
       local basePeakAlpha = (peaks[i] <= 2.5) and 90 or 230
       local peakAlpha = math.floor(basePeakAlpha * fadeFactor + 0.5)
       local peakSpec = string.format(
-        'Rectangle %d,%d,%d,2,1,1 | StrokeWidth 0 | Fill Color #TextPrimary#,%d',
+        'Rectangle %d,%d,%d,2,1,1 | StrokeWidth 0 | Fill Color 242,245,250,%d',
         x, py, barW, peakAlpha
       )
       if peakSpec ~= lastPeakSpec[i] then
@@ -162,6 +162,5 @@ function Update()
 
   if not anyActive and fadeFactor <= 0.0 and not isSleeping then
     isSleeping = true
-    SKIN:Bang('!SetOption', 'Rainmeter', 'Update', '250')
   end
 end
