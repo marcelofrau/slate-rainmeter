@@ -35,6 +35,7 @@ if (-not $NoActivate) {
     # True 8px window-to-window gap between every card (both columns end at Y=968)
     $configs = @(
         @{c='Slate\DesktopClock';   i='DesktopClock.ini';   x=220;  y=760},
+        @{c='Slate\Visualizer';     i='Visualizer.ini';     x=220;  y=1010},
         @{c='Slate\Clock';          i='Clock.ini';          x=1944; y=288},
         @{c='Slate\WorldClock';     i='WorldClock.ini';     x=1944; y=424},
         @{c='Slate\Weather';        i='Weather.ini';        x=1944; y=496},
@@ -53,7 +54,7 @@ if (-not $NoActivate) {
         & $rm "!Move" $cfg.x $cfg.y $cfg.c
         Start-Sleep -Milliseconds 400
     }
-    Write-Host "12 skins activated and positioned with 8px window gap"
+    Write-Host "13 skins activated and positioned with 8px window gap"
 
     # Lock card positions (Draggable=0) in Rainmeter.ini so accidental clicks never move them
     Start-Sleep -Milliseconds 1500
