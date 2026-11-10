@@ -112,14 +112,14 @@ function Update()
     end
 
     if showPeak == 1 then
-      local py = (peaks[i] <= 3) and -10 or math.max(2, math.floor(maxH - peaks[i] + 1))
+      local py = math.max(2, math.floor(maxH - peaks[i] + 1))
       if py ~= lastPeakY[i] then
         lastPeakY[i] = py
         changed = true
-        local peakAlpha = (py < 0) and 0 or 230
+        local peakAlpha = (peaks[i] <= 2.5) and 90 or 230
         local peakSpec = string.format(
           'Rectangle %d,%d,%d,2,1,1 | StrokeWidth 0 | Fill Color #TextPrimary#,%d',
-          x, math.max(0, py), barW, peakAlpha
+          x, py, barW, peakAlpha
         )
         SKIN:Bang('!SetOption', 'MeterBars', 'Shape' .. (MAX_SLOTS + i), peakSpec)
       end
