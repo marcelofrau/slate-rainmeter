@@ -37,3 +37,12 @@ FontMono=Geist Mono Medium
 
 ; --- Hardware ---
 GPUTotalMB=12282
+
+; --- Visualizer (VU Meter Bar) ---
+; VizBands: numero de colunas (ex: 16, 24, 32, 48). Se mudar, rode deploy.ps1
+VizBands=32
+VizBarW=8
+VizBarGap=3
+VizHeight=72
+VizPeakHold=1
+VizSensitivity=42

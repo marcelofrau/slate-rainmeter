@@ -8,6 +8,7 @@
 
 - **100% Autonomous Telemetry**: Uses native Rainmeter measures and Windows Performance Counters (`UsageMonitor`) for CPU, RAM, GPU, VRAM, Disk Space, Disk Active Time + Read/Write throughput, and Network Upload/Download.
 - **Dynamic Auto-Scaling Charts**: Custom Lua rolling-peak scaler (`autoscale.lua`) with exponential decay keeps history graphs legible even at low/idle loads while adapting smoothly to traffic and load spikes.
+- **High-FPS VU Meter Bar with Auto Fade-Out**: 40 FPS draggable spectrum visualizer (`Visualizer`) with peak-hold indicators, right-click column presets (`16 / 24 / 32 / 48 / 64`), smooth fade-out after 2 seconds of silence, and automatic idle sleep (`~0%` CPU when silent).
 - **Keyless Public APIs**:
   - **Weather & Details** powered by [Open-Meteo](https://open-meteo.com/) (no API key needed).
   - **Public Holidays Calendar** powered by [Nager.Date](https://date.nager.at/) (no API key needed) with built-in offline fallback.
@@ -16,11 +17,12 @@
 
 ---
 
-## Included Widgets (12 Skins · Frameless Hero + 256px Modular Grid)
+## Included Widgets (13 Skins · 2 Frameless Overlays + 11 Modular Cards)
 
-| Desktop Overlay (Frameless) | Size | Description |
+| Desktop Overlays (Frameless & Draggable) | Size | Description |
 | :--- | :---: | :--- |
 | **`DesktopClock`** | `760×240` | Large 92pt frameless digital clock, uppercase date bar, and rotating sci-fi/geek quotes (`@Resources/Data/quotes.txt`) with a 25ms terminal typewriter animation (`ActionTimer.dll`), 1-minute auto-rotation, and click-to-skip. |
+| **`Visualizer`** | `Dynamic` | High-FPS (`40 FPS`) draggable VU meter spectrum bar with peak-hold indicators, right-click column presets (`16 / 24 / 32 / 48 / 64`), smooth fade-out after 2s of silence, and automatic idle sleep. |
 
 | Column 1 (Time, Weather & Calendar) | Size | Description |
 | :--- | :---: | :--- |
@@ -60,14 +62,16 @@ flowchart LR
         AutoScale["autoscale.lua\n(Rolling Peak + Decay)"]
         CalLua["calendar.lua\n(Grid & Holiday Parser)"]
         QuotesLua["quotes.lua + ActionTimer\n(Terminal Typewriter Quotes)"]
+        VizLua["visualizer.lua + AudioLevel\n(40 FPS VU Bar + 2s Fade-Out)"]
     end
 
-    Perf --> AutoScale --> Skins["Slate 12 Modular Skins\n(FrostedGlass Cards + Frameless Overlay)"]
+    Perf --> AutoScale --> Skins["Slate 13 Modular Skins\n(11 Locked Cards + 2 Draggable Overlays)"]
     Audio --> Skins
     ClockM --> Skins
     Meteo --> Skins
     Nager --> CalLua --> Skins
     QuotesLua --> Skins
+    VizLua --> Skins
 ```
 
 ---
@@ -79,7 +83,7 @@ flowchart LR
    - [Oxanium](https://fonts.google.com/specimen/Oxanium) (`Oxanium`, `Oxanium Medium`, `Oxanium SemiBold`) — geometric sci-fi display/UI font.
    - [Geist Mono](https://vercel.com/font) (`Geist Mono Medium`) — monospaced telemetry and numeric readouts.
 3. **Rainmeter Plugins** (standard / bundled in modern Rainmeter setups):
-   - `UsageMonitor.dll`, `SysInfo.dll`, `WebParser.dll`, `Win7AudioPlugin.dll`, `Mouse.dll`, `ActionTimer.dll`, `FrostedGlass.dll`.
+   - `UsageMonitor.dll`, `SysInfo.dll`, `WebParser.dll`, `Win7AudioPlugin.dll`, `AudioLevel.dll`, `Mouse.dll`, `ActionTimer.dll`, `FrostedGlass.dll`.
 
 ---
 
