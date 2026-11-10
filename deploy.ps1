@@ -33,6 +33,7 @@ Start-Sleep -Milliseconds 2000
 
 if (-not $NoActivate) {
     $configs = @(
+        @{c='Slate\DesktopClock';   i='DesktopClock.ini';   x=220;  y=760},
         @{c='Slate\Clock';          i='Clock.ini';          x=1948; y=288},
         @{c='Slate\WorldClock';     i='WorldClock.ini';     x=1948; y=420},
         @{c='Slate\Weather';        i='Weather.ini';        x=1948; y=488},
@@ -51,7 +52,7 @@ if (-not $NoActivate) {
         & $rm "!Move" $cfg.x $cfg.y $cfg.c
         Start-Sleep -Milliseconds 500
     }
-    Write-Host "11 skins activated and positioned (columns x=1952 and x=2208)"
+    Write-Host "12 skins activated and positioned"
 
     # Sync saved layout if present so Game Mode exit restores Slate
     Start-Sleep -Milliseconds 1500
@@ -60,12 +61,12 @@ if (-not $NoActivate) {
         $cur = Get-Content $rmIni
         $ok = 0
         for ($j=0; $j -lt $cur.Count; $j++) {
-            if ($cur[$j] -match '^\[Slate\\(Clock|WorldClock|Weather|WeatherDetails|Calendar|Volume|CPU|RAM|GPU|Disk|Network)\]') {
+            if ($cur[$j] -match '^\[Slate\\(DesktopClock|Clock|WorldClock|Weather|WeatherDetails|Calendar|Volume|CPU|RAM|GPU|Disk|Network)\]') {
                 $k = $j+1
                 if ($cur[$k] -match 'Active=1') { $ok++ }
             }
         }
-        if ($ok -ge 11) {
+        if ($ok -ge 12) {
             Copy-Item $rmIni $layoutIni -Force
             Write-Host "Saved layout synced ($ok active skins)"
         }

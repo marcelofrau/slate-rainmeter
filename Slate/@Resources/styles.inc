@@ -6,18 +6,6 @@
 ; declarado apenas nos meters que realmente usam [Measure] em Text/X/Shape.
 ; ================================================================
 
-; --- FrostedGlass (Acrylic Blur nativo em todas as skins) ---
-[MeasureBlur]
-Measure=Plugin
-Plugin=FrostedGlass
-Type=Blur
-Border=None
-Corner=Round
-DarkMode=1
-MicaOnFocus=0
-IgnoreWarnings=1
-Backdrop=0,0,0,1
-
 ; --- Tipografia plana (todos os estilos tem AntiAlias=1 direto) ---
 [TextStyle]
 FontFace=#FontMedium#
