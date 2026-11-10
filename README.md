@@ -16,7 +16,11 @@
 
 ---
 
-## Included Widgets (11 Cards · 256px Modular Grid)
+## Included Widgets (12 Skins · Frameless Hero + 256px Modular Grid)
+
+| Desktop Overlay (Frameless) | Size | Description |
+| :--- | :---: | :--- |
+| **`DesktopClock`** | `760×240` | Large 92pt frameless digital clock, uppercase date bar, and rotating sci-fi/geek quotes (`@Resources/Data/quotes.txt`) with a 25ms terminal typewriter animation (`ActionTimer.dll`), 1-minute auto-rotation, and click-to-skip. |
 
 | Column 1 (Time, Weather & Calendar) | Size | Description |
 | :--- | :---: | :--- |
@@ -24,7 +28,7 @@
 | **`WorldClock`** | `256×64` (`4x1`) | Secondary timezone card (defaults to `Sao Paulo · BRT · UTC-3`). |
 | **`Weather`** | `256×128` (`4x2`) | Hero weather card: condition badge, 56px weather icon, current temperature, `FL` (feels like), and a visual `MIN / MAX` thermal range bar. |
 | **`WeatherDetails`** | `256×64` (`4x1`) | 3-column atmospheric telemetry: `WIND` (with dynamic 8-way direction arrow), `HUMIDITY`, and `UV INDEX`. |
-| **`Calendar`** | `256×256` (`4x4`) | Interactive monthly calendar (month navigation via arrows or mouse wheel), today pill highlight, and automatic Spain / Aragón public holiday highlights + tooltips. |
+| **`Calendar`** | `256×264` (`4x4`) | Interactive monthly calendar (month navigation via arrows or mouse wheel), today pill highlight, and automatic Spain / Aragón public holiday highlights + tooltips. |
 
 | Column 2 (System, Storage, Network & Audio) | Size | Description |
 | :--- | :---: | :--- |
@@ -55,13 +59,15 @@ flowchart LR
     subgraph LuaEngine["Slate Lua Scripts"]
         AutoScale["autoscale.lua\n(Rolling Peak + Decay)"]
         CalLua["calendar.lua\n(Grid & Holiday Parser)"]
+        QuotesLua["quotes.lua + ActionTimer\n(Terminal Typewriter Quotes)"]
     end
 
-    Perf --> AutoScale --> Skins["Slate 11 Modular Skins\n(FrostedGlass + GDI+ Flat Styles)"]
+    Perf --> AutoScale --> Skins["Slate 12 Modular Skins\n(FrostedGlass Cards + Frameless Overlay)"]
     Audio --> Skins
     ClockM --> Skins
     Meteo --> Skins
     Nager --> CalLua --> Skins
+    QuotesLua --> Skins
 ```
 
 ---
@@ -73,7 +79,7 @@ flowchart LR
    - [Oxanium](https://fonts.google.com/specimen/Oxanium) (`Oxanium`, `Oxanium Medium`, `Oxanium SemiBold`) — geometric sci-fi display/UI font.
    - [Geist Mono](https://vercel.com/font) (`Geist Mono Medium`) — monospaced telemetry and numeric readouts.
 3. **Rainmeter Plugins** (standard / bundled in modern Rainmeter setups):
-   - `UsageMonitor.dll`, `SysInfo.dll`, `WebParser.dll`, `Win7AudioPlugin.dll`, `Mouse.dll`, `FrostedGlass.dll`.
+   - `UsageMonitor.dll`, `SysInfo.dll`, `WebParser.dll`, `Win7AudioPlugin.dll`, `Mouse.dll`, `ActionTimer.dll`, `FrostedGlass.dll`.
 
 ---
 
