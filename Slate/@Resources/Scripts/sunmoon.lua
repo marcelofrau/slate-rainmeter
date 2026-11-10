@@ -56,8 +56,8 @@ function Update()
 
   SKIN:Bang('!SetOption', 'MeterMoonIcon', 'ImageName',
     string.format('#@#Images\\Icons\\MoonPhase_%d.png', idx))
-  SKIN:Bang('!SetOption', 'MeterMoonSub', 'Text',
-    string.format('%s  ·  %d%% moon', phaseName, illum))
+  SKIN:Bang('!SetVariable', 'MoonPhaseName', phaseName)
+  SKIN:Bang('!SetVariable', 'MoonIllumPct', string.format('%d%% moon', illum))
 
   -- 2) Visual Sun Trajectory Arc on the right (from X=114,Y=28 to X=194,Y=28, peak Y=12)
   local arcX = 114 + progress * 80.0
