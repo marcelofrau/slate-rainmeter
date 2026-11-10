@@ -70,15 +70,17 @@ X=16
 Y=12
 AntiAlias=1
 
-; --- Containers de Card (4x1 = 256x64, 4x2 = 256x128, 4x4 = 256x256) ---
+; --- Containers de Card (com margin transparente de 4px embutido:
+;     260px W e +4px H total, para que o SnapEdges nativo do Rainmeter
+;     grude um card no outro mantendo a margem exata automaticamente!) ---
 [Card4x1Style]
-Shape=Rectangle 2,2,252,60,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
-Shape2=Line 8,2,248,2 | StrokeWidth 1 | Stroke Color #CardBevel#
+Shape=Rectangle 4,4,252,60,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
+Shape2=Line 10,4,250,4 | StrokeWidth 1 | Stroke Color #CardBevel#
 
 [Card4x2Style]
-Shape=Rectangle 2,2,252,124,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
-Shape2=Line 8,2,248,2 | StrokeWidth 1 | Stroke Color #CardBevel#
+Shape=Rectangle 4,4,252,124,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
+Shape2=Line 10,4,250,4 | StrokeWidth 1 | Stroke Color #CardBevel#
 
 [Card4x4Style]
-Shape=Rectangle 2,2,252,256,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
-Shape2=Line 8,2,248,2 | StrokeWidth 1 | Stroke Color #CardBevel#
+Shape=Rectangle 4,4,252,256,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
+Shape2=Line 10,4,250,4 | StrokeWidth 1 | Stroke Color #CardBevel#

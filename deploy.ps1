@@ -32,6 +32,9 @@ Write-Host "Deploy OK -> $dst"
 Start-Sleep -Milliseconds 2000
 
 if (-not $NoActivate) {
+    # Com SkinWidth=260 e SkinHeight=(68|132|264) incluindo a margem de 4px,
+    # os cards encostam 0px entre si e o SnapEdges nativo do Rainmeter
+    # trava exatamente na margem visual pedida!
     $configs = @(
         @{c='Slate\DesktopClock';   i='DesktopClock.ini';   x=220;  y=760},
         @{c='Slate\Clock';          i='Clock.ini';          x=1948; y=288},
