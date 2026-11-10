@@ -37,7 +37,7 @@
 | :--- | :---: | :--- |
 | **`CPU`** | `256×128` (`4x2`) | Processor model auto-detection, utilization %, clock speed (GHz), and scrolling micro-grid graph. |
 | **`RAM`** | `256×64` (`4x1`) | Used / Total GB, utilization %, and thin progress bar. |
-| **`GPU`** | `256×128` (`4x2`) | GPU model auto-detection, core utilization %, core temperature (`°C`) & power draw (`W`) via `nvidia-smi`, dedicated VRAM usage (GB), and scrolling micro-grid graph. |
+| **`GPU`** | `256×128` (`4x2`) | GPU model auto-detection, core utilization %, dedicated VRAM usage (GB), and scrolling micro-grid graph. |
 | **`Disk`** | `256×128` (`4x2`) | `Disk C:` used/total GB + progress bar, global Read/Write throughput (`_Total`), and scrolling Disk Active Time (`%`) graph. |
 | **`Network`** | `256×128` (`4x2`) | Active adapter alias, connectivity status, live Up/Down rates, and dual side-by-side Upload / Download history graphs. |
 | **`Media`** | `256×64` (`4x1`) | Now Playing media controller (`WindowsNowPlaying.dll`: Track, Artist, Prev/Play-Pause/Next, progress bar) that transitions cleanly to a `System Uptime · STANDBY` telemetry view when no media is active. |
