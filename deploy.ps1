@@ -32,46 +32,60 @@ Write-Host "Deploy OK -> $dst"
 Start-Sleep -Milliseconds 2000
 
 if (-not $NoActivate) {
-    # Com SkinWidth=260 e SkinHeight=(68|132|264) incluindo a margem de 4px,
-    # os cards encostam 0px entre si e o SnapEdges nativo do Rainmeter
-    # trava exatamente na margem visual pedida!
+    # True 8px window-to-window gap between every card (both columns end at Y=968)
     $configs = @(
         @{c='Slate\DesktopClock';   i='DesktopClock.ini';   x=220;  y=760},
-        @{c='Slate\Clock';          i='Clock.ini';          x=1948; y=288},
-        @{c='Slate\WorldClock';     i='WorldClock.ini';     x=1948; y=420},
-        @{c='Slate\Weather';        i='Weather.ini';        x=1948; y=488},
-        @{c='Slate\WeatherDetails'; i='WeatherDetails.ini'; x=1948; y=620},
-        @{c='Slate\Calendar';       i='Calendar.ini';       x=1948; y=688},
+        @{c='Slate\Clock';          i='Clock.ini';          x=1944; y=288},
+        @{c='Slate\WorldClock';     i='WorldClock.ini';     x=1944; y=424},
+        @{c='Slate\Weather';        i='Weather.ini';        x=1944; y=496},
+        @{c='Slate\WeatherDetails'; i='WeatherDetails.ini'; x=1944; y=632},
+        @{c='Slate\Calendar';       i='Calendar.ini';       x=1944; y=704},
         @{c='Slate\CPU';            i='CPU.ini';            x=2208; y=288},
-        @{c='Slate\RAM';            i='RAM.ini';            x=2208; y=420},
-        @{c='Slate\GPU';            i='GPU.ini';            x=2208; y=488},
-        @{c='Slate\Disk';           i='Disk.ini';           x=2208; y=620},
-        @{c='Slate\Network';        i='Network.ini';        x=2208; y=752},
-        @{c='Slate\Volume';         i='Volume.ini';         x=2208; y=884}
+        @{c='Slate\RAM';            i='RAM.ini';            x=2208; y=424},
+        @{c='Slate\GPU';            i='GPU.ini';            x=2208; y=496},
+        @{c='Slate\Disk';           i='Disk.ini';           x=2208; y=632},
+        @{c='Slate\Network';        i='Network.ini';        x=2208; y=768},
+        @{c='Slate\Volume';         i='Volume.ini';         x=2208; y=904}
     )
     foreach ($cfg in $configs) {
         & $rm "!ActivateConfig" $cfg.c $cfg.i
-        Start-Sleep -Milliseconds 1500
+        Start-Sleep -Milliseconds 1200
         & $rm "!Move" $cfg.x $cfg.y $cfg.c
-        Start-Sleep -Milliseconds 500
+        Start-Sleep -Milliseconds 400
     }
-    Write-Host "12 skins activated and positioned"
+    Write-Host "12 skins activated and positioned with 8px window gap"
 
-    # Sync saved layout if present so Game Mode exit restores Slate
+    # Lock card positions (Draggable=0) in Rainmeter.ini so accidental clicks never move them
     Start-Sleep -Milliseconds 1500
+    & $rm !Quit
+    Start-Sleep -Milliseconds 2500
+    $lines = [System.IO.File]::ReadAllLines($rmIni)
+    $out = New-Object System.Collections.Generic.List[string]
+    $inSlateCard = $false
+    $wroteDrag = $false
+    foreach ($l in $lines) {
+        if ($l -match '^\[(.+)\]') {
+            if ($inSlateCard -and -not $wroteDrag) {
+                $out.Add('Draggable=0')
+            }
+            $sec = $Matches[1]
+            $inSlateCard = ($sec -match '^Slate\\(Clock|WorldClock|Weather|WeatherDetails|Calendar|Volume|CPU|RAM|GPU|Disk|Network)$')
+            $wroteDrag = $false
+            $out.Add($l)
+        } elseif ($inSlateCard -and $l -match '^Draggable=') {
+            $out.Add('Draggable=0')
+            $wroteDrag = $true
+        } else {
+            $out.Add($l)
+        }
+    }
+    if ($inSlateCard -and -not $wroteDrag) { $out.Add('Draggable=0') }
+    [System.IO.File]::WriteAllLines($rmIni, $out, [System.Text.Encoding]::Unicode)
+
     $layoutIni = "$env:APPDATA\Rainmeter\Layouts\keita_quanto\Rainmeter.ini"
     if (Test-Path $layoutIni) {
-        $cur = Get-Content $rmIni
-        $ok = 0
-        for ($j=0; $j -lt $cur.Count; $j++) {
-            if ($cur[$j] -match '^\[Slate\\(DesktopClock|Clock|WorldClock|Weather|WeatherDetails|Calendar|Volume|CPU|RAM|GPU|Disk|Network)\]') {
-                $k = $j+1
-                if ($cur[$k] -match 'Active=1') { $ok++ }
-            }
-        }
-        if ($ok -ge 12) {
-            Copy-Item $rmIni $layoutIni -Force
-            Write-Host "Saved layout synced ($ok active skins)"
-        }
+        Copy-Item $rmIni $layoutIni -Force
     }
+    Start-Process $rm
+    Write-Host "Cards locked (Draggable=0) and layout keita_quanto synced"
 }
