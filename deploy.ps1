@@ -32,7 +32,7 @@ Write-Host "Deploy OK -> $dst"
 Start-Sleep -Milliseconds 2000
 
 if (-not $NoActivate) {
-    # True 8px window-to-window gap between every card (both columns end at Y=968)
+    # True 8px window-to-window gap between every card (both columns end at Y=1040)
     $configs = @(
         @{c='Slate\DesktopClock';   i='DesktopClock.ini';   x=220;  y=760},
         @{c='Slate\Visualizer';     i='Visualizer.ini';     x=220;  y=1010},
@@ -40,13 +40,15 @@ if (-not $NoActivate) {
         @{c='Slate\WorldClock';     i='WorldClock.ini';     x=1944; y=424},
         @{c='Slate\Weather';        i='Weather.ini';        x=1944; y=496},
         @{c='Slate\WeatherDetails'; i='WeatherDetails.ini'; x=1944; y=632},
-        @{c='Slate\Calendar';       i='Calendar.ini';       x=1944; y=704},
+        @{c='Slate\SunMoon';        i='SunMoon.ini';        x=1944; y=704},
+        @{c='Slate\Calendar';       i='Calendar.ini';       x=1944; y=776},
         @{c='Slate\CPU';            i='CPU.ini';            x=2208; y=288},
         @{c='Slate\RAM';            i='RAM.ini';            x=2208; y=424},
         @{c='Slate\GPU';            i='GPU.ini';            x=2208; y=496},
         @{c='Slate\Disk';           i='Disk.ini';           x=2208; y=632},
         @{c='Slate\Network';        i='Network.ini';        x=2208; y=768},
-        @{c='Slate\Volume';         i='Volume.ini';         x=2208; y=904}
+        @{c='Slate\Media';          i='Media.ini';          x=2208; y=904},
+        @{c='Slate\Volume';         i='Volume.ini';         x=2208; y=976}
     )
     foreach ($cfg in $configs) {
         & $rm "!ActivateConfig" $cfg.c $cfg.i
@@ -54,7 +56,7 @@ if (-not $NoActivate) {
         & $rm "!Move" $cfg.x $cfg.y $cfg.c
         Start-Sleep -Milliseconds 400
     }
-    Write-Host "13 skins activated and positioned with 8px window gap"
+    Write-Host "15 skins activated and positioned with 8px window gap"
 
     # Lock card positions (Draggable=0) in Rainmeter.ini so accidental clicks never move them
     Start-Sleep -Milliseconds 1500
@@ -70,7 +72,7 @@ if (-not $NoActivate) {
                 $out.Add('Draggable=0')
             }
             $sec = $Matches[1]
-            $inSlateCard = ($sec -match '^Slate\\(Clock|WorldClock|Weather|WeatherDetails|Calendar|Volume|CPU|RAM|GPU|Disk|Network)$')
+            $inSlateCard = ($sec -match '^Slate\\(Clock|WorldClock|Weather|WeatherDetails|SunMoon|Calendar|Media|Volume|CPU|RAM|GPU|Disk|Network)$')
             $wroteDrag = $false
             $out.Add($l)
         } elseif ($inSlateCard -and $l -match '^Draggable=') {

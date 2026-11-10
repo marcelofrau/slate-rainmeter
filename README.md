@@ -17,28 +17,30 @@
 
 ---
 
-## Included Widgets (13 Skins · 2 Frameless Overlays + 11 Modular Cards)
+## Included Widgets (15 Skins · 2 Frameless Overlays + 13 Modular Cards)
 
 | Desktop Overlays (Frameless & Draggable) | Size | Description |
 | :--- | :---: | :--- |
 | **`DesktopClock`** | `760×240` | Large 92pt frameless digital clock, uppercase date bar, and rotating sci-fi/geek quotes (`@Resources/Data/quotes.txt`) with a 25ms terminal typewriter animation (`ActionTimer.dll`), 1-minute auto-rotation, and click-to-skip. |
 | **`Visualizer`** | `Dynamic` | High-FPS (`40 FPS`) draggable VU meter spectrum bar with peak-hold indicators, right-click column presets (`16 / 24 / 32 / 48 / 64`), smooth fade-out after 2s of silence, and automatic idle sleep. |
 
-| Column 1 (Time, Weather & Calendar) | Size | Description |
+| Column 1 (Time, Weather, Astronomy & Calendar) | Size | Description |
 | :--- | :---: | :--- |
 | **`Clock`** | `256×128` (`4x2`) | Local 24h clock, automatic `CET / CEST · UTC` offset badge, and full date. |
 | **`WorldClock`** | `256×64` (`4x1`) | Secondary timezone card (defaults to `Sao Paulo · BRT · UTC-3`). |
 | **`Weather`** | `256×128` (`4x2`) | Hero weather card: condition badge, 56px weather icon, current temperature, `FL` (feels like), and a visual `MIN / MAX` thermal range bar. |
 | **`WeatherDetails`** | `256×64` (`4x1`) | 3-column atmospheric telemetry: `WIND` (with dynamic 8-way direction arrow), `HUMIDITY`, and `UV INDEX`. |
+| **`SunMoon`** | `256×64` (`4x1`) | Real astronomical moon phase icon (`8` phases), lunar phase name + `% illuminated`, and local `Sunrise ↑` / `Sunset ↓` times. |
 | **`Calendar`** | `256×264` (`4x4`) | Interactive monthly calendar (month navigation via arrows or mouse wheel), today pill highlight, and automatic Spain / Aragón public holiday highlights + tooltips. |
 
-| Column 2 (System, Storage, Network & Audio) | Size | Description |
+| Column 2 (System, Storage, Network, Media & Audio) | Size | Description |
 | :--- | :---: | :--- |
 | **`CPU`** | `256×128` (`4x2`) | Processor model auto-detection, utilization %, clock speed (GHz), and scrolling micro-grid graph. |
 | **`RAM`** | `256×64` (`4x1`) | Used / Total GB, utilization %, and thin progress bar. |
-| **`GPU`** | `256×128` (`4x2`) | GPU model auto-detection, core utilization %, dedicated VRAM usage (GB), and scrolling micro-grid graph. |
+| **`GPU`** | `256×128` (`4x2`) | GPU model auto-detection, core utilization %, core temperature (`°C`) & power draw (`W`) via `nvidia-smi`, dedicated VRAM usage (GB), and scrolling micro-grid graph. |
 | **`Disk`** | `256×128` (`4x2`) | `Disk C:` used/total GB + progress bar, global Read/Write throughput (`_Total`), and scrolling Disk Active Time (`%`) graph. |
 | **`Network`** | `256×128` (`4x2`) | Active adapter alias, connectivity status, live Up/Down rates, and dual side-by-side Upload / Download history graphs. |
+| **`Media`** | `256×64` (`4x1`) | Now Playing media controller (`WindowsNowPlaying.dll`: Track, Artist, Prev/Play-Pause/Next, progress bar) that transitions cleanly to a `System Uptime · STANDBY` telemetry view when no media is active. |
 | **`Volume`** | `256×64` (`4x1`) | Master volume slider (click/drag track, scroll wheel ±2%, click icon or percentage to mute). |
 
 ---
