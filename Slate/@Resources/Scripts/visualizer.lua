@@ -107,6 +107,9 @@ function Update()
     if isSleeping then
       isSleeping = false
       SKIN:Bang('!SetOption', 'Rainmeter', 'Update', '25')
+      -- Device watcher: poll default output every 1s while active
+      SKIN:Bang('!SetOption', 'MeasureDefaultOutput', 'UpdateDivider', '40')
+      SKIN:Bang('!SetOption', 'MeasureDefaultOutputName', 'UpdateDivider', '40')
     end
     silentTicks = 0
     fadeFactor = math.min(1.0, fadeFactor + 0.25)
@@ -162,5 +165,9 @@ function Update()
 
   if not anyActive and fadeFactor <= 0.0 and not isSleeping then
     isSleeping = true
+    SKIN:Bang('!SetOption', 'Rainmeter', 'Update', '250')
+    -- Device watcher: poll default output every 5s while sleeping
+    SKIN:Bang('!SetOption', 'MeasureDefaultOutput', 'UpdateDivider', '20')
+    SKIN:Bang('!SetOption', 'MeasureDefaultOutputName', 'UpdateDivider', '20')
   end
 end
