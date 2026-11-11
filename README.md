@@ -8,7 +8,7 @@
 
 - **100% Autonomous Telemetry**: Uses native Rainmeter measures and Windows Performance Counters (`UsageMonitor`) for CPU, RAM, GPU, VRAM, Disk Space, Disk Active Time + Read/Write throughput, and Network Upload/Download.
 - **Dynamic Auto-Scaling Charts**: Custom Lua rolling-peak scaler (`autoscale.lua`) with exponential decay keeps history graphs legible even at low/idle loads while adapting smoothly to traffic and load spikes.
-- **High-FPS VU Meter Bar with Auto Fade-Out**: 40 FPS draggable spectrum visualizer (`Visualizer`) with peak-hold indicators, right-click column presets (`16 / 24 / 32 / 48 / 64`), smooth fade-out after 2 seconds of silence, and automatic idle sleep (`~0%` CPU when silent).
+- **High-FPS VU Meter Bar with Auto Fade-Out**: 40 FPS draggable spectrum visualizer (`Visualizer`) with peak-hold indicators, right-click column presets (`16 / 24 / 32 / 48 / 64`), smooth fade-out after 2 seconds of silence, automatic idle sleep (`~0%` CPU when silent), and automatic rebind when the default audio output device changes (speaker / headset / USB) via `Win7AudioPlugin`.
 - **Keyless Public APIs**:
   - **Weather & Details** powered by [Open-Meteo](https://open-meteo.com/) (no API key needed).
   - **Public Holidays Calendar** powered by [Nager.Date](https://date.nager.at/) (no API key needed) with built-in offline fallback.
