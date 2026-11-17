@@ -79,6 +79,26 @@ Shape2=Line 7,1,249,1 | StrokeWidth 1 | Stroke Color #CardBevel#
 Shape=Rectangle 1,1,254,126,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
 Shape2=Line 7,1,249,1 | StrokeWidth 1 | Stroke Color #CardBevel#
 
+[Card4x3Style]
+Shape=Rectangle 1,1,254,190,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
+Shape2=Line 7,1,249,1 | StrokeWidth 1 | Stroke Color #CardBevel#
+
 [Card4x4Style]
 Shape=Rectangle 1,1,254,262,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
+Shape2=Line 7,1,249,1 | StrokeWidth 1 | Stroke Color #CardBevel#
+
+[Card4x256Style]
+Shape=Rectangle 1,1,254,254,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
+Shape2=Line 7,1,249,1 | StrokeWidth 1 | Stroke Color #CardBevel#
+
+[Card4x5Style]
+Shape=Rectangle 1,1,254,318,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
+Shape2=Line 7,1,249,1 | StrokeWidth 1 | Stroke Color #CardBevel#
+
+[Card4x6Style]
+Shape=Rectangle 1,1,254,382,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
+Shape2=Line 7,1,249,1 | StrokeWidth 1 | Stroke Color #CardBevel#
+
+[Card4x8Style]
+Shape=Rectangle 1,1,254,518,6,6 | StrokeWidth 1 | Stroke Color #CardStroke# | Fill Color #CardColor#
 Shape2=Line 7,1,249,1 | StrokeWidth 1 | Stroke Color #CardBevel#

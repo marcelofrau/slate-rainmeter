@@ -13,3 +13,9 @@ Thumbs.db
 # Tooling
 .cortexkit/
 
+# Local secrets & work environment overrides (never commit)
+.env
+.env.*
+!.env.example
+Slate/@Resources/work.local.inc
+
