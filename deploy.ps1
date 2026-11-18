@@ -7,16 +7,105 @@ param(
     [switch]$ListMonitors
 )
 
-if ($ListMonitors) {
-    Add-Type -AssemblyName System.Windows.Forms
-    $screens = [System.Windows.Forms.Screen]::AllScreens
-    for ($i = 0; $i -lt $screens.Length; $i++) {
-        $screen = $screens[$i]
-        $bounds = $screen.Bounds
-        Write-Host "[$i] $($screen.DeviceName) $($bounds.Width)x$($bounds.Height) at ($($bounds.X),$($bounds.Y)) Primary=$($screen.Primary)"
-    }
-    exit 0
+function Get-SlateMonitors {
+    if (-not ('SlateMonitorHelper' -as [type])) {
+        Add-Type -TypeDefinition @'
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
+public class SlateMonitorInfo {
+    public string DeviceName;
+    public bool Primary;
+    public int DpiX;
+    public double Scale;
+    public int X;
+    public int Y;
+    public int Width;
+    public int Height;
+    public int WorkX;
+    public int WorkY;
+    public int WorkWidth;
+    public int WorkHeight;
+    public int WorkRight;
 }
+
+public class SlateMonitorHelper {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RECT { public int Left, Top, Right, Bottom; }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+    public struct MONITORINFOEX {
+        public int cbSize;
+        public RECT rcMonitor;
+        public RECT rcWork;
+        public uint dwFlags;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        public string szDevice;
+    }
+
+    public delegate bool MonitorEnumProc(IntPtr hMonitor, IntPtr hdcMonitor, ref RECT lprcMonitor, IntPtr dwData);
+
+    [DllImport("user32.dll")]
+    public static extern bool SetProcessDpiAwarenessContext(IntPtr value);
+
+    [DllImport("user32.dll")]
+    public static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lprcClip, MonitorEnumProc lpfnEnum, IntPtr dwData);
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    public static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFOEX lpmi);
+
+    [DllImport("Shcore.dll")]
+    public static extern int GetDpiForMonitor(IntPtr hmonitor, int dpiType, out uint dpiX, out uint dpiY);
+
+    public static List<SlateMonitorInfo> GetMonitors() {
+        try { SetProcessDpiAwarenessContext(new IntPtr(-4)); } catch {}
+        var list = new List<SlateMonitorInfo>();
+        EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, delegate(IntPtr hMon, IntPtr hdc, ref RECT r, IntPtr d) {
+            MONITORINFOEX mi = new MONITORINFOEX();
+            mi.cbSize = Marshal.SizeOf(typeof(MONITORINFOEX));
+            uint dx = 96, dy = 96;
+            try { GetDpiForMonitor(hMon, 0, out dx, out dy); } catch {}
+            if (GetMonitorInfo(hMon, ref mi)) {
+                var info = new SlateMonitorInfo();
+                info.DeviceName = mi.szDevice;
+                info.Primary = (mi.dwFlags & 1) != 0;
+                info.DpiX = (int)dx;
+                info.Scale = (double)dx / 96.0;
+                info.X = mi.rcMonitor.Left;
+                info.Y = mi.rcMonitor.Top;
+                info.Width = mi.rcMonitor.Right - mi.rcMonitor.Left;
+                info.Height = mi.rcMonitor.Bottom - mi.rcMonitor.Top;
+                info.WorkX = mi.rcWork.Left;
+                info.WorkY = mi.rcWork.Top;
+                info.WorkWidth = mi.rcWork.Right - mi.rcWork.Left;
+                info.WorkHeight = mi.rcWork.Bottom - mi.rcWork.Top;
+                info.WorkRight = mi.rcWork.Right;
+                list.Add(info);
+            }
+            return true;
+        }, IntPtr.Zero);
+        return list;
+    }
+}
+'@
+    }
+    return [SlateMonitorHelper]::GetMonitors()
+}
+
+    if ($ListMonitors) {
+        $screens = Get-SlateMonitors
+        for ($i = 0; $i -lt $screens.Count; $i++) {
+            $s = $screens[$i]
+            $pct = [int][Math]::Round($s.Scale * 100)
+            $lx = [int][Math]::Round($s.X / $s.Scale)
+            $ly = [int][Math]::Round($s.Y / $s.Scale)
+            $lw = [int][Math]::Round($s.Width / $s.Scale)
+            $lh = [int][Math]::Round($s.Height / $s.Scale)
+            Write-Host "[$i] $($s.DeviceName) Physical=$($s.Width)x$($s.Height) at ($($s.X),$($s.Y)) | Logical=${lw}x${lh} at (${lx},${ly}) Scale=${pct}% Primary=$($s.Primary)"
+        }
+        exit 0
+    }
 
 $src = "$PSScriptRoot\Slate"
 $rm  = "C:\Program Files\Rainmeter\Rainmeter.exe"
@@ -35,11 +124,10 @@ $dst = "$skinBase\Slate"
 
 $workScreen = $null
 if ($ProfileName -eq 'Work' -and -not $NoActivate) {
-    Add-Type -AssemblyName System.Windows.Forms
-    $screens = [System.Windows.Forms.Screen]::AllScreens
+    $screens = Get-SlateMonitors
     if ($WorkMonitorIndex -lt 0) {
         $secondary = @()
-        for ($i = 0; $i -lt $screens.Length; $i++) {
+        for ($i = 0; $i -lt $screens.Count; $i++) {
             if (-not $screens[$i].Primary) { $secondary += $i }
         }
         if ($secondary.Count -ne 1) {
@@ -47,10 +135,10 @@ if ($ProfileName -eq 'Work' -and -not $NoActivate) {
         }
         $WorkMonitorIndex = $secondary[0]
     }
-    if ($WorkMonitorIndex -ge $screens.Length) {
+    if ($WorkMonitorIndex -ge $screens.Count) {
         throw "Monitor index $WorkMonitorIndex does not exist. Run .\deploy.ps1 -ListMonitors."
     }
-    $workScreen = $screens[$WorkMonitorIndex].WorkingArea
+    $workScreen = $screens[$WorkMonitorIndex]
 }
 
 robocopy $src $dst /MIR /NJH /NJS /NDL | Out-Null
@@ -107,11 +195,15 @@ if (-not $NoActivate) {
     )
 
     if ($ProfileName -eq 'Work') {
-        $workStackH = 128 + 8 + 128 + 8 + 128 + 8 + 384
-        $workCol3X = $workScreen.Right - 256 - 96
+        $sc = $workScreen.Scale
+        $logRight  = [int][Math]::Round($workScreen.WorkRight / $sc)
+        $logY      = [int][Math]::Round($workScreen.WorkY / $sc)
+        $logHeight = [int][Math]::Round($workScreen.WorkHeight / $sc)
+        $workStackH = 792
+        $workCol3X = $logRight - 256 - 96
         $workCol2X = $workCol3X - 8 - 256
         $workCol1X = $workCol2X - 8 - 256
-        $workY = $workScreen.Y + [int][Math]::Floor(($workScreen.Height - $workStackH) / 2)
+        $workY = $logY + [int][Math]::Floor(($logHeight - $workStackH) / 2)
         & $rm '!DeactivateConfig' 'Slate\Work'
         $configs += @(
             @{c='Slate\Work\Comms';        i='Comms.ini';        x=$workCol1X; y=$workY},
