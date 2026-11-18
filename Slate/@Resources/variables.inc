@@ -6,14 +6,18 @@
 
 [Variables]
 ; --- Clima (Open-Meteo - gratis, sem API key) ---
-Latitude=40.4168
-Longitude=-3.7038
-LocationName=Madrid
+Latitude=41.6488
+Longitude=-0.8891
+LocationName=Zaragoza
 UnitTemp=C
 
-; --- World Clock ---
-WorldCity=Sao Paulo
-WorldTZ=-3
+; --- World Clock (Dual Timezone: India & Portland) ---
+WorldCity1=India
+WorldSub1=IST · UTC+5:30
+WorldTZ1=5.5
+WorldCity2=Portland
+WorldTZ2=-8
+WorldDST2=1
 
 ; --- Cores (R,G,B,A - paleta Retro-Futurista / Cyber-Sage) ---
 AccentColor=110,185,172
