@@ -5,6 +5,8 @@
 ; ================================================================
 
 [Variables]
+SlateVersion=3.0.0
+SlateRepo=marcelofrau/slate-rainmeter
 ; --- Clima (Open-Meteo - gratis, sem API key) ---
 Latitude=41.6488
 Longitude=-0.8891

@@ -1,0 +1,49 @@
+name: Release Slate Suite
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Package Slate Release ZIP
+        shell: pwsh
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          $ver = $tag -replace '^v',''
+          $zipName = "Slate-v$ver.zip"
+
+          # Sync version into VERSION, Variables.inc, and all skin .ini files
+          Set-Content -Path "VERSION" -Value $ver -NoNewline -Encoding UTF8
+          $varsPath = "Slate\@Resources\Variables.inc"
+          $varsText = [System.IO.File]::ReadAllText($varsPath)
+          $varsText = [regex]::Replace($varsText, '(?m)^SlateVersion=.*$', "SlateVersion=$ver")
+          [System.IO.File]::WriteAllText($varsPath, $varsText, [System.Text.UTF8Encoding]::new($false))
+
+          Get-ChildItem Slate -Recurse -Filter *.ini | ForEach-Object {
+              $t = [System.IO.File]::ReadAllText($_.FullName)
+              if ($t -match '(?m)^Version=') {
+                  $t = [regex]::Replace($t, '(?m)^Version=.*$', "Version=$ver")
+                  [System.IO.File]::WriteAllText($_.FullName, $t, [System.Text.UTF8Encoding]::new($false))
+              }
+          }
+
+          Compress-Archive -Path "Slate", "deploy.ps1", "VERSION", "README.md", "LICENSE", ".env.example" -DestinationPath $zipName -Force
+          "ZIP_NAME=$zipName" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIP_NAME }}
+          generate_release_notes: true
