@@ -228,43 +228,7 @@ if (-not $NoActivate) {
     }
     Write-Host "Slate $ProfileName profile activated and positioned"
 
-    # Lock card positions (Draggable=0) in Rainmeter.ini so accidental clicks never move them
-    Start-Sleep -Milliseconds 1500
-    & $rm !Quit
-    Start-Sleep -Milliseconds 2500
-    $lines = [System.IO.File]::ReadAllLines($rmIni)
-    $out = New-Object System.Collections.Generic.List[string]
-    $inSlateCard = $false
-    $wroteDrag = $false
-    foreach ($l in $lines) {
-        if ($l -match '^\[(.+)\]') {
-            if ($inSlateCard -and -not $wroteDrag) {
-                $out.Add('Draggable=0')
-            }
-            $sec = $Matches[1]
-            $inSlateCard = ($sec -match '^Slate\\(Work\\)?(Clock|WorldClock|Weather|WeatherDetails|SunMoon|Calendar|Media|Volume|CPU|RAM|GPU|Disk|Network|Battery|Focus|Stopwatch|Notes|AIModels|ClaudeCost|CopilotQuota|Comms|Bluetooth|Jira|Confluence)$')
-            $wroteDrag = $false
-            $out.Add($l)
-        } elseif ($inSlateCard -and $l -match '^Draggable=') {
-            $out.Add('Draggable=0')
-            $wroteDrag = $true
-        } else {
-            $out.Add($l)
-        }
-    }
-    if ($inSlateCard -and -not $wroteDrag) { $out.Add('Draggable=0') }
-    [System.IO.File]::WriteAllLines($rmIni, $out, [System.Text.Encoding]::Unicode)
-
-    if ($ProfileName -eq 'Home') {
-        $layoutIni = "$env:APPDATA\Rainmeter\Layouts\keita_quanto\Rainmeter.ini"
-        if (Test-Path $layoutIni) {
-            Copy-Item $rmIni $layoutIni -Force
-        }
-    } else {
-        $layoutDir = "$env:APPDATA\Rainmeter\Layouts\Slate_Work"
-        New-Item -ItemType Directory -Path $layoutDir -Force | Out-Null
-        Copy-Item $rmIni (Join-Path $layoutDir 'Rainmeter.ini') -Force
-    }
-    Start-Process $rm
-    Write-Host "Cards locked (Draggable=0); layout $ProfileName saved separately"
+    # Ensure cards are locked by default (Draggable=0) and invoke dynamic relayout
+    pwsh -NoProfile -ExecutionPolicy Bypass -File "$dst\@Resources\Scripts\relayout.ps1" -Action Realign -Force
+    Write-Host "Slate $ProfileName profile activated and dynamically aligned (cards locked by default)"
 }
