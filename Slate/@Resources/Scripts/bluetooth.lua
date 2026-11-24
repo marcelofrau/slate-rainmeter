@@ -3,13 +3,22 @@ local lastSignature = nil
 local tick = 0
 
 local function applyMap(map)
+  local function hidden(key)
+    return map[key] == '1' and '0' or '1'
+  end
   SKIN:Bang('!SetVariable', 'BTActiveCount', map['active_count'] or '0')
   SKIN:Bang('!SetVariable', 'HSName', map['hs_name'] or 'Headset')
   SKIN:Bang('!SetVariable', 'HSBat', map['hs_bat'] or '0')
+  SKIN:Bang('!SetVariable', 'HSCharging', map['hs_charging'] or '0')
+  SKIN:Bang('!SetVariable', 'HSChargingHidden', hidden('hs_charging'))
   SKIN:Bang('!SetVariable', 'KBName', map['kb_name'] or 'Keyboard')
   SKIN:Bang('!SetVariable', 'KBBat', map['kb_bat'] or '0')
+  SKIN:Bang('!SetVariable', 'KBCharging', map['kb_charging'] or '0')
+  SKIN:Bang('!SetVariable', 'KBChargingHidden', hidden('kb_charging'))
   SKIN:Bang('!SetVariable', 'MSName', map['ms_name'] or 'Mouse')
   SKIN:Bang('!SetVariable', 'MSBat', map['ms_bat'] or '0')
+  SKIN:Bang('!SetVariable', 'MSCharging', map['ms_charging'] or '0')
+  SKIN:Bang('!SetVariable', 'MSChargingHidden', hidden('ms_charging'))
   SKIN:Bang('!UpdateMeter', '*')
   SKIN:Bang('!Redraw')
 end

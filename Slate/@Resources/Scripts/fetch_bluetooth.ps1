@@ -52,18 +52,76 @@ foreach ($it in ($raw.Values | Where-Object { $_.Connected -and $_.Bat -ge 0 }))
 }
 
 $activeCnt = @($headset, $kbd, $mouse | Where-Object { $_.State -eq 'ACTIVE' }).Count
+
+# Windows exposes no charging flag for Bluetooth devices, so the only local signal is the
+# measured battery rising. Window: a rise counts as "charging" for 30 minutes.
+$statePath = if ($OutFile) { Join-Path (Split-Path -Parent $OutFile) 'bluetooth-state.txt' } else { $null }
+$prev = @{}
+if ($statePath -and (Test-Path $statePath)) {
+    foreach ($line in (Get-Content $statePath -ErrorAction SilentlyContinue)) {
+        $k, $v = $line -split '=', 2
+        if ($k -and $v) { $prev[$k] = $v }
+    }
+}
+$nowS = [long][DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+$state = @{}
+
+function Get-SlotCharging {
+    param([string]$Key, [hashtable]$Device)
+    $prevName = ''
+    $prevBat = -1
+    $riseAt = [long]0
+    if ($prev.ContainsKey($Key)) {
+        $parts = $prev[$Key] -split '\|'
+        if ($parts.Count -ge 3) {
+            $prevName = $parts[0]
+            $prevBat = [int]$parts[1]
+            $riseAt = [long]$parts[2]
+        }
+    }
+    if ($prevName -ne $Device.Name) { $prevBat = -1; $riseAt = 0 }
+    $bat = [int]$Device.Bat
+    $delta = $bat - $prevBat
+    # A rise too big for one reporting window is a stale or reconnected value, not a charge, and a
+    # drop means it is running on battery again: both re-baseline instead of flagging charging.
+    if ($Device.State -eq 'ACTIVE' -and $prevBat -ge 0 -and $delta -le 0) { $riseAt = 0 }
+    if ($Device.State -eq 'ACTIVE' -and $prevBat -ge 0 -and $delta -gt 0 -and $delta -le 12) { $riseAt = $nowS }
+    if ($delta -gt 12) { $riseAt = 0 }
+    # An inactive device keeps its last sample, so switching off and back on is not a rise.
+    if ($Device.State -eq 'ACTIVE') {
+        $state[$Key] = "$($Device.Name)|$bat|$riseAt"
+    } elseif ($prev.ContainsKey($Key)) {
+        $state[$Key] = $prev[$Key]
+    }
+    if ($Device.State -ne 'ACTIVE' -or $riseAt -le 0) { return 0 }
+    if (($nowS - $riseAt) -gt 1800) { return 0 }
+    return 1
+}
+
+$hsChg = Get-SlotCharging -Key 'hs' -Device $headset
+$kbChg = Get-SlotCharging -Key 'kb' -Device $kbd
+$msChg = Get-SlotCharging -Key 'ms' -Device $mouse
+
 $lines = @(
     "active_count=$activeCnt",
     "hs_name=$($headset.Name)",
     "hs_bat=$($headset.Bat)",
     "hs_state=$($headset.State)",
+    "hs_charging=$hsChg",
     "kb_name=$($kbd.Name)",
     "kb_bat=$($kbd.Bat)",
     "kb_state=$($kbd.State)",
+    "kb_charging=$kbChg",
     "ms_name=$($mouse.Name)",
     "ms_bat=$($mouse.Bat)",
-    "ms_state=$($mouse.State)"
+    "ms_state=$($mouse.State)",
+    "ms_charging=$msChg"
 )
+
+if ($statePath -and $state.Count -gt 0) {
+    $stateLines = $state.GetEnumerator() | Sort-Object Name | ForEach-Object { "$($_.Key)=$($_.Value)" }
+    [System.IO.File]::WriteAllLines($statePath, $stateLines, [System.Text.UTF8Encoding]::new($false))
+}
 
 if ($OutFile) {
     $dir = Split-Path -Parent $OutFile
