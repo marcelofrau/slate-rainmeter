@@ -1,6 +1,27 @@
 param([string]$OutFile)
 
 $ErrorActionPreference = 'SilentlyContinue'
+
+# Rainmeter spawns pwsh with the machine/user PATH only, where fnm's per-shell node is missing,
+# so resolve the JS runtime here instead of trusting `node` to be on PATH.
+function Resolve-JsRuntime {
+    $onPath = Get-Command -Name node -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($onPath) { return $onPath.Source }
+    $fnmRoot = Join-Path $env:APPDATA 'fnm\node-versions'
+    if (Test-Path $fnmRoot) {
+        $install = Get-ChildItem $fnmRoot -Directory -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match '^v\d+(\.\d+)*$' } |
+            Sort-Object { [version]($_.Name -replace '^v','') } -Descending |
+            Select-Object -First 1
+        if ($install) {
+            $exe = Join-Path $install.FullName 'installation\node.exe'
+            if (Test-Path $exe) { return $exe }
+        }
+    }
+    $bun = Get-Command -Name bun -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($bun) { return $bun.Source }
+}
+
 $quotaRoot = Get-ChildItem "$env:USERPROFILE\.cache\opencode\npm\@slkiser\opencode-quota@*" -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 $distDir = $null
 if ($quotaRoot) {
@@ -21,6 +42,9 @@ $resetDays = '--'
 $updated = Get-Date -Format 'HH:mm'
 
 if ($distDir) {
+    $jsRuntime = Resolve-JsRuntime
+}
+if ($distDir -and $jsRuntime) {
     $distUrl = 'file:///' + ($distDir -replace '\\','/')
     $js = @"
 import { createSqliteCredentialSource } from "$distUrl/lib/opencode-auth-sqlite.js";
@@ -40,7 +64,7 @@ try {
   unbind();
 }
 "@
-    $jsonLine = ($js | node --input-type=module - 2>$null | Select-Object -Last 1)
+    $jsonLine = ($js | & $jsRuntime '--input-type=module' '-' 2>$null | Select-Object -Last 1)
     if ($jsonLine) {
         try {
             $obj = $jsonLine | ConvertFrom-Json
@@ -78,6 +102,8 @@ $lines = @(
     "updated=$updated"
 )
 if ($OutFile) {
+    # A failed run keeps the last good cache: overwriting it painted the card "0 left / 0 / 0".
+    if ($status -ne 'SYNCED' -and (Test-Path $OutFile)) { exit 0 }
     $dir = Split-Path -Parent $OutFile
     if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
     [System.IO.File]::WriteAllLines($OutFile, $lines, [System.Text.UTF8Encoding]::new($false))
